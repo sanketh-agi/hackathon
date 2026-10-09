@@ -15,8 +15,6 @@ class Customer(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(255))
-    app_url: Mapped[str] = mapped_column(String(1024), default="")
-    config_json: Mapped[dict] = mapped_column(JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     documents: Mapped[list["Document"]] = relationship(back_populates="customer", cascade="all, delete-orphan")
@@ -73,7 +71,6 @@ class TestCase(Base):
     customer: Mapped["Customer"] = relationship(back_populates="test_cases")
     rule: Mapped["Rule | None"] = relationship()
     script: Mapped["PlaywrightScript | None"] = relationship(back_populates="test_case", uselist=False, cascade="all, delete-orphan")
-    runs: Mapped[list["TestRun"]] = relationship(back_populates="test_case", cascade="all, delete-orphan")
 
 
 class PlaywrightScript(Base):
@@ -85,16 +82,3 @@ class PlaywrightScript(Base):
     generated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     test_case: Mapped["TestCase"] = relationship(back_populates="script")
-
-
-class TestRun(Base):
-    __tablename__ = "test_runs"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    test_case_id: Mapped[int] = mapped_column(ForeignKey("test_cases.id"))
-    status: Mapped[str] = mapped_column(String(32), default="pending")
-    result_json: Mapped[dict] = mapped_column(JSON, default=dict)
-    started_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
-    finished_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-
-    test_case: Mapped["TestCase"] = relationship(back_populates="runs")

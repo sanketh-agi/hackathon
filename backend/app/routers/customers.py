@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 
 from app import models, schemas
@@ -27,3 +27,14 @@ def get_customer(customer_id: int, db: Session = Depends(get_db)):
     if not customer:
         raise HTTPException(404, "Customer not found")
     return customer
+
+
+@router.delete("/{customer_id}", status_code=204)
+def delete_customer(customer_id: int, db: Session = Depends(get_db)):
+    customer = db.get(models.Customer, customer_id)
+    if not customer:
+        raise HTTPException(404, "Customer not found")
+    # cascades to documents, rules, test cases, and their scripts
+    db.delete(customer)
+    db.commit()
+    return Response(status_code=204)

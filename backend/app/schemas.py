@@ -7,15 +7,11 @@ from pydantic import BaseModel, Field
 
 class CustomerCreate(BaseModel):
     name: str
-    app_url: str = ""
-    config_json: dict = Field(default_factory=dict)
 
 
 class CustomerOut(BaseModel):
     id: int
     name: str
-    app_url: str
-    config_json: dict
     created_at: datetime
 
     class Config:
@@ -103,25 +99,13 @@ class GenerateRequest(BaseModel):
     count_hint: int | None = Field(default=None, description="Approximate number of test cases desired")
 
 
-# ---- Playwright script / runs ----
+# ---- Playwright script ----
 
 class PlaywrightScriptOut(BaseModel):
     id: int
     test_case_id: int
     code: str
     generated_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-class TestRunOut(BaseModel):
-    id: int
-    test_case_id: int
-    status: str
-    result_json: dict
-    started_at: datetime
-    finished_at: datetime | None
 
     class Config:
         from_attributes = True

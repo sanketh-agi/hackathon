@@ -144,8 +144,7 @@ export default function TestCases({ customer }: { customer: Customer }) {
     try {
       const script = await api.generateScript(tc.id);
       setScripts((s) => ({ ...s, [tc.id]: script.code }));
-      downloadScript(tc, script.code);
-      setScriptStatus((s) => ({ ...s, [tc.id]: "Script ready — download started" }));
+      setScriptStatus((s) => ({ ...s, [tc.id]: "Script ready — click Download script" }));
     } catch (e) {
       setScriptStatus((s) => ({ ...s, [tc.id]: String(e) }));
     }

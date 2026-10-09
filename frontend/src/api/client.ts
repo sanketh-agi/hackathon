@@ -1,4 +1,4 @@
-const BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL ?? "/api";
+const BASE_URL = "http://localhost:8000";
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -21,8 +21,6 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 export interface Customer {
   id: number;
   name: string;
-  app_url: string;
-  config_json: Record<string, unknown>;
   created_at: string;
 }
 
@@ -67,19 +65,11 @@ export interface PlaywrightScript {
   generated_at: string;
 }
 
-export interface TestRun {
-  id: number;
-  test_case_id: number;
-  status: string;
-  result_json: Record<string, unknown>;
-  started_at: string;
-  finished_at: string | null;
-}
-
 export const api = {
   listCustomers: () => request<Customer[]>("/customers"),
-  createCustomer: (data: { name: string; app_url: string; config_json?: Record<string, unknown> }) =>
+  createCustomer: (data: { name: string }) =>
     request<Customer>("/customers", { method: "POST", body: JSON.stringify(data) }),
+  deleteCustomer: (id: number) => request<void>(`/customers/${id}`, { method: "DELETE" }),
 
   listDocuments: (customerId: number) => request<DocumentItem[]>(`/customers/${customerId}/documents`),
   uploadDocument: (customerId: number, docType: string, file: File) => {
@@ -104,9 +94,6 @@ export const api = {
   generateScript: (testCaseId: number) =>
     request<PlaywrightScript>(`/test-cases/${testCaseId}/generate-script`, { method: "POST" }),
   getScript: (testCaseId: number) => request<PlaywrightScript>(`/test-cases/${testCaseId}/script`),
-
-  runTestCase: (testCaseId: number) => request<TestRun>(`/test-cases/${testCaseId}/run`, { method: "POST" }),
-  listRuns: (testCaseId: number) => request<TestRun[]>(`/test-cases/${testCaseId}/runs`),
 
   reportUrl: (customerId: number) => `${BASE_URL}/customers/${customerId}/report`,
 };

@@ -3,6 +3,9 @@ backend/.venv/
 backend/**/__pycache__/
 backend/*.db
 
+# Runtime-uploaded customer documents (generated data, not source)
+backend/document_storage/
+
 # Node
 **/node_modules/
 frontend/dist/
@@ -15,3 +18,6 @@ tools/certs/
 
 # IDE
 .idea/
+
+# Secrets
+backend/.env

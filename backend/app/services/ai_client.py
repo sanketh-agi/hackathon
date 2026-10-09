@@ -5,7 +5,6 @@ call and the codegen call build an identical set of document content
 blocks for a given customer.
 """
 
-import json
 import logging
 import os
 from typing import Any
@@ -35,7 +34,7 @@ def get_client():
 SYSTEM_PROMPT = """You are a senior QA test architect. You write customer-specific, \
 end-to-end and pointed test cases derived strictly from the requirement and reference \
 documents provided (BRD/PRD, customer requirements, user stories, acceptance criteria, \
-existing test cases, QBP documents) and the target application URL and configuration.
+existing test cases, QBP documents).
 
 Rules:
 - Every test case must be traceable to a specific document and, where possible, a specific \
@@ -68,11 +67,7 @@ def _document_blocks(documents: list[Document]) -> list[dict[str, Any]]:
 
 
 def _customer_context_text(customer: Customer) -> str:
-    return (
-        f"Customer: {customer.name}\n"
-        f"Application URL: {customer.app_url}\n"
-        f"Customer-specific configuration: {json.dumps(customer.config_json)}\n"
-    )
+    return f"Customer: {customer.name}\n"
 
 
 def _strict_schema(model_cls) -> dict[str, Any]:
@@ -203,10 +198,9 @@ def generate_playwright_code(
     request_text = (
         f"{_customer_context_text(customer)}\n"
         "Convert the following APPROVED test case into a single, runnable Playwright "
-        "TypeScript test file (using @playwright/test). Use the application URL above as "
-        "the base URL (via `page.goto`). Prefer resilient selectors (role/text/label-based) "
-        "since the live DOM was not inspected. Output ONLY the TypeScript code, no prose, "
-        "no markdown fences.\n\n"
+        "TypeScript test file (using @playwright/test). Prefer resilient selectors "
+        "(role/text/label-based) since the live DOM was not inspected. Output ONLY the "
+        "TypeScript code, no prose, no markdown fences.\n\n"
         f"Test case: {test_case.title}\n"
         f"Preconditions: {test_case.preconditions}\n"
         f"Steps:\n{steps_text}\n"
