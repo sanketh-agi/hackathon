@@ -17,7 +17,6 @@ PRIORITY_BADGE = {
     "low": "badge-neutral",
 }
 STATUS_BADGE = {"approved": "badge-success", "draft": "badge-neutral"}
-RUN_BADGE = {"passed": "badge-success", "failed": "badge-danger", "not run": "badge-neutral"}
 
 
 def _badge(label: str, mapping: dict[str, str]) -> str:
@@ -48,13 +47,10 @@ def audit_report(customer_id: int, db: Session = Depends(get_db)):
     )
 
     approved_count = sum(1 for tc in test_cases if tc.status == "approved")
-    passed_count = sum(1 for tc in test_cases if tc.runs and tc.runs[0].status == "passed")
-    failed_count = sum(1 for tc in test_cases if tc.runs and tc.runs[0].status == "failed")
+    draft_count = len(test_cases) - approved_count
 
     rows = []
     for tc in test_cases:
-        latest_run = tc.runs[0] if tc.runs else None
-        run_status = latest_run.status if latest_run else "not run"
         rows.append(
             f"""
             <tr>
@@ -63,7 +59,6 @@ def audit_report(customer_id: int, db: Session = Depends(get_db)):
               <td>{_badge(tc.priority, PRIORITY_BADGE)}</td>
               <td>{_badge(tc.status, STATUS_BADGE)}</td>
               <td class="muted">{escape(tc.requirement_trace)}</td>
-              <td>{_badge(run_status, RUN_BADGE)}</td>
             </tr>
             """
         )
@@ -78,7 +73,7 @@ def audit_report(customer_id: int, db: Session = Depends(get_db)):
       <style>
         :root {{
           --bg: #f5f6f8; --surface: #ffffff; --border: #e3e6ea; --text: #16181d;
-          --text-muted: #6b7280; --primary: #4338ca;
+          --text-muted: #6b7280; --primary: #2563eb;
           --success: #067647; --success-bg: #e7f6ee;
           --warning: #b45309; --warning-bg: #fef3e2;
           --danger: #b42318; --danger-bg: #fdeceb;
@@ -121,7 +116,6 @@ def audit_report(customer_id: int, db: Session = Depends(get_db)):
       <div class="header">
         <div>
           <h1>Audit Report — {escape(customer.name)}</h1>
-          <div class="subtitle">Application URL: {escape(customer.app_url) or "—"}</div>
         </div>
         <div class="generated">Generated {generated_at}</div>
       </div>
@@ -129,19 +123,18 @@ def audit_report(customer_id: int, db: Session = Depends(get_db)):
       <div class="stats">
         {_stat("Total test cases", len(test_cases))}
         {_stat("Approved", approved_count)}
-        {_stat("Passed (latest run)", passed_count)}
-        {_stat("Failed (latest run)", failed_count)}
+        {_stat("Draft", draft_count)}
       </div>
 
       <table>
         <thead>
           <tr>
             <th>ID</th><th>Test Case</th><th>Priority</th><th>Status</th>
-            <th>Requirement Trace</th><th>Last Run</th>
+            <th>Requirement Trace</th>
           </tr>
         </thead>
         <tbody>
-          {"".join(rows) if rows else '<tr><td colspan="6" class="empty">No test cases yet</td></tr>'}
+          {"".join(rows) if rows else '<tr><td colspan="5" class="empty">No test cases yet</td></tr>'}
         </tbody>
       </table>
     </body>

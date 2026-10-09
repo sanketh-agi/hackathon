@@ -4,15 +4,17 @@ import { api, type Customer } from "../api/client";
 export default function CustomerSetup({
   customer,
   onSelect,
+  onDeleted,
 }: {
   customer: Customer | null;
   onSelect: (c: Customer) => void;
+  onDeleted?: (id: number) => void;
 }) {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [name, setName] = useState("");
-  const [appUrl, setAppUrl] = useState("");
-  const [configText, setConfigText] = useState("{}");
   const [error, setError] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<Customer | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const refresh = () => api.listCustomers().then(setCustomers).catch((e) => setError(String(e)));
 
@@ -23,15 +25,28 @@ export default function CustomerSetup({
   const create = async () => {
     setError(null);
     try {
-      const config_json = configText.trim() ? JSON.parse(configText) : {};
-      const created = await api.createCustomer({ name, app_url: appUrl, config_json });
+      const created = await api.createCustomer({ name });
       setCustomers((prev) => [created, ...prev]);
       onSelect(created);
       setName("");
-      setAppUrl("");
-      setConfigText("{}");
     } catch (e) {
       setError(String(e));
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    setDeleting(true);
+    setError(null);
+    try {
+      await api.deleteCustomer(pendingDelete.id);
+      setCustomers((prev) => prev.filter((c) => c.id !== pendingDelete.id));
+      onDeleted?.(pendingDelete.id);
+      setPendingDelete(null);
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -58,24 +73,6 @@ export default function CustomerSetup({
             <input className="input" placeholder="e.g. Acme Corp" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div>
-            <label className="field-label">Application URL</label>
-            <input
-              className="input"
-              placeholder="https://staging.acme.com"
-              value={appUrl}
-              onChange={(e) => setAppUrl(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="field-label">Customer-specific configuration (JSON)</label>
-            <textarea
-              className="textarea"
-              value={configText}
-              onChange={(e) => setConfigText(e.target.value)}
-              rows={4}
-            />
-          </div>
-          <div>
             <button className="btn btn-primary" onClick={create} disabled={!name}>
               Create customer
             </button>
@@ -94,18 +91,64 @@ export default function CustomerSetup({
         ) : (
           <div style={{ display: "grid", gap: "0.25rem" }}>
             {customers.map((c) => (
-              <button
-                key={c.id}
-                className={`btn-list${customer?.id === c.id ? " selected" : ""}`}
-                onClick={() => onSelect(c)}
-              >
-                <span>{c.name}</span>
-                <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>{c.app_url || "no URL"}</span>
-              </button>
+              <div className="customer-row" key={c.id}>
+                <button
+                  className={`btn-list${customer?.id === c.id ? " selected" : ""}`}
+                  onClick={() => onSelect(c)}
+                >
+                  <span>{c.name}</span>
+                </button>
+                <button
+                  className="icon-btn icon-btn-danger"
+                  onClick={() => setPendingDelete(c)}
+                  aria-label={`Delete ${c.name}`}
+                  title={`Delete ${c.name}`}
+                >
+                  🗑
+                </button>
+              </div>
             ))}
           </div>
         )}
       </div>
+
+      {pendingDelete && (
+        <div className="modal-overlay" onClick={() => !deleting && setPendingDelete(null)}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="modal-title" id="delete-title">
+              Delete customer?
+            </h3>
+            <p className="modal-body">
+              This permanently deletes <strong>{pendingDelete.name}</strong> along with all its
+              documents, rules, and generated test cases. This cannot be undone.
+            </p>
+            <div className="modal-actions">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setPendingDelete(null)}
+                disabled={deleting}
+              >
+                Cancel
+              </button>
+              <button className="btn btn-danger" onClick={confirmDelete} disabled={deleting}>
+                {deleting ? (
+                  <>
+                    <span className="spinner" /> Deleting…
+                  </>
+                ) : (
+                  "Delete customer"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

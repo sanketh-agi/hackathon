@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.db import Base, engine
-from app.routers import codegen, customers, documents, reports, rules, runs, testcases
+from app.routers import codegen, customers, documents, reports, rules, testcases
 
 logging.basicConfig(
     level=os.environ.get("LOG_LEVEL", "INFO"),
@@ -18,18 +18,17 @@ app = FastAPI(title="AI Test Case Generator & Automation")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(customers.router, prefix="/api")
-app.include_router(documents.router, prefix="/api")
-app.include_router(rules.router, prefix="/api")
-app.include_router(testcases.router, prefix="/api")
-app.include_router(codegen.router, prefix="/api")
-app.include_router(runs.router, prefix="/api")
-app.include_router(reports.router, prefix="/api")
+app.include_router(customers.router)
+app.include_router(documents.router)
+app.include_router(rules.router)
+app.include_router(testcases.router)
+app.include_router(codegen.router)
+app.include_router(reports.router)
 
 
 @app.get("/health")
