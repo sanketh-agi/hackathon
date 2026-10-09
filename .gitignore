@@ -21,3 +21,4 @@ tools/certs/
 
 # Secrets
 backend/.env
+.aws-deploy/
