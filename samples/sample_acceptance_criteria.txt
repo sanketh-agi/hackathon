@@ -1,0 +1,41 @@
+ACCEPTANCE CRITERIA
+Feature: Login, Lockout, Cart Persistence (ref. PRD v1.0)
+
+AC-1 (Successful login)
+Given a registered customer with a valid email and password
+When they submit the login form
+Then they are redirected to the account dashboard
+And their previously saved cart items are restored.
+
+AC-2 (Invalid password)
+Given a registered customer enters the correct email but wrong password
+When they submit the login form
+Then they see "Incorrect email or password"
+And the email field retains its value
+And the password field is cleared.
+
+AC-3 (Account lockout after repeated failures)
+Given a customer has failed to log in 5 times within 15 minutes
+When they attempt to log in a 6th time
+Then the account is locked for 15 minutes
+And the message "Too many failed attempts..." is displayed
+And a lockout event is recorded in the audit log.
+
+AC-4 (Lockout expiry)
+Given a customer's account was locked 15 minutes ago
+When they attempt to log in again with the correct password
+Then the login succeeds
+And the failed-attempt counter resets to zero.
+
+AC-5 (Guest cart persistence within session)
+Given a customer who is not logged in has items in their cart
+When they navigate away and return within the same browser session
+Then their cart items are still present
+And a banner suggests logging in to save the cart long-term.
+
+AC-6 (Payment declined)
+Given a customer reaches checkout with a valid cart
+When their payment method is declined
+Then they see "Your payment was declined..."
+And they remain on the checkout page
+And their cart is not cleared.

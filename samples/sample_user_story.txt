@@ -1,0 +1,24 @@
+USER STORY
+ID: US-101
+As a returning customer,
+I want to log in with my email and password,
+So that I can access my saved cart and complete my purchase quickly.
+
+Acceptance Criteria:
+- I can enter my email and password and click "Log In".
+- If my credentials are correct, I am taken to my dashboard with my cart restored.
+- If my credentials are wrong, I see a clear error message and can try again.
+- If I fail too many times in a row, I am temporarily locked out and told how
+  long to wait.
+
+---
+
+USER STORY
+ID: US-102
+As a customer with items in my cart,
+I want my cart to still be there if I come back later,
+So that I don't have to re-add everything I picked out.
+
+Acceptance Criteria:
+- If I'm logged in, my cart is saved for at least 30 days.
+- If I'm not logged in, I'm reminded that logging in will save my cart.

@@ -1,0 +1,19 @@
+# Python
+backend/.venv/
+backend/**/__pycache__/
+backend/*.db
+backend/.env
+backend/document_storage/
+
+# Node
+**/node_modules/
+frontend/dist/
+automation/test-results/
+automation/tests/generated/*.spec.ts
+
+# Portable tooling / secrets
+tools/node-v22.12.0-win-x64/
+tools/certs/
+
+# IDE
+.idea/

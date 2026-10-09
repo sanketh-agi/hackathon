@@ -1,0 +1,20 @@
+QUARTERLY BUSINESS PROCESS (QBP) REVIEW NOTES
+Topic: Checkout & Login Reliability — Q3 Review
+
+Findings discussed:
+1. Support ticket volume for "can't log in" rose 22% quarter-over-quarter.
+   Root cause analysis points to unclear lockout messaging and customers not
+   realizing their cart was lost after being logged out.
+2. No current automated regression coverage exists for the account lockout
+   flow (5 failed attempts -> 15 minute lock). This was flagged as a risk
+   ahead of the holiday traffic surge.
+3. Cart persistence behavior differs between logged-in and guest sessions in
+   a way that is not clearly documented anywhere customers can see it.
+4. Action item: QA to expand automated test coverage to include lockout,
+   lockout expiry, and cart persistence across both logged-in and guest
+   scenarios before the Q4 traffic increase.
+5. Action item: Product to confirm the exact lockout copy and timing with
+   Support before next release (see PRD FR-5 through FR-8).
+
+Decision: Prioritize automated end-to-end coverage for login + lockout +
+cart persistence as the top QA investment for Q4.

@@ -1,0 +1,41 @@
+BUSINESS REQUIREMENTS DOCUMENT (BRD)
+Project: Acme Online Store — Customer Account & Checkout
+Version: 1.0
+
+1. BUSINESS OBJECTIVE
+Acme Corp wants to reduce cart abandonment and support-ticket volume related to
+account access and checkout. Customers currently report difficulty logging in
+and confusion about order status. The business goal is to increase successful
+checkout completion rate by 15% and reduce login-related support tickets by 30%
+within one quarter of launch.
+
+2. BACKGROUND
+Acme sells home goods through its e-commerce site (https://staging.acme.com).
+Customers must have an account to check out. Guest checkout is not offered.
+Support data shows the top three complaints are: (a) unclear password
+requirements, (b) accounts getting locked with no clear unlock path, and
+(c) customers not realizing their cart was emptied after a long idle session.
+
+3. STAKEHOLDERS
+- VP of E-Commerce (sponsor)
+- Customer Support Lead
+- Engineering Lead
+
+4. BUSINESS REQUIREMENTS
+BR-1: Customers must be able to securely create an account and log in using
+      an email address and password.
+BR-2: The system must protect customer accounts from brute-force login
+      attempts without permanently locking legitimate customers out.
+BR-3: Customers must always be able to see the current contents and total of
+      their shopping cart before being asked to log in or pay.
+BR-4: Customers must receive clear, immediate feedback when something goes
+      wrong during login or checkout (wrong password, expired session,
+      payment declined), so they do not abandon the purchase out of
+      confusion.
+BR-5: The business needs an audit trail of failed login attempts and account
+      lockouts for fraud and support investigation purposes.
+
+5. SUCCESS METRICS
+- Checkout completion rate increases by 15%.
+- Login-related support tickets decrease by 30%.
+- No increase in fraudulent account creation.

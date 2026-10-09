@@ -1,0 +1,65 @@
+PRODUCT REQUIREMENTS DOCUMENT (PRD)
+Feature: Login, Account Lockout, and Cart Persistence
+Related BRD: Acme Online Store — Customer Account & Checkout (v1.0)
+Version: 1.0
+
+1. OVERVIEW
+This PRD defines the functional behavior for the login screen, account lockout
+policy, and cart persistence on https://staging.acme.com, implementing the
+business requirements in the associated BRD.
+
+2. SCOPE
+In scope: login form, password rules, lockout mechanism, lockout notification,
+cart persistence across sessions, checkout error messaging.
+Out of scope: social login (Google/Facebook), guest checkout, multi-factor
+authentication (planned for a future release).
+
+3. FUNCTIONAL REQUIREMENTS
+
+3.1 Login
+- FR-1: The login page must present two fields: "Email" and "Password", and a
+  "Log In" button.
+- FR-2: Email must be validated as a well-formed email address on the client
+  side before submission.
+- FR-3: On successful login, the customer is redirected to their account
+  dashboard and any items previously in their cart (see 3.3) are restored.
+- FR-4: On incorrect password, the system displays the message "Incorrect
+  email or password" without revealing which field was wrong, and does not
+  clear the email field.
+
+3.2 Account Lockout
+- FR-5: After 5 consecutive failed login attempts for the same email within a
+  15-minute window, the account is locked for 15 minutes.
+- FR-6: While locked, the login page displays: "Too many failed attempts.
+  Please try again in 15 minutes or reset your password."
+- FR-7: A successful login resets the failed-attempt counter to zero.
+- FR-8: Every failed attempt and every lockout event is written to the
+  security audit log with timestamp, email, and source IP.
+
+3.3 Cart Persistence
+- FR-9: Cart contents must persist for a logged-in customer across browser
+  sessions for at least 30 days.
+- FR-10: For a customer who is not logged in, the cart is stored for the
+  duration of the browser session only; a banner reading "Log in to save
+  your cart for later" is shown above the cart.
+- FR-11: If the cart was modified in another tab/session, the customer sees
+  an inline notice "Your cart was updated" before checkout total is
+  calculated.
+
+3.4 Checkout Error Handling
+- FR-12: If payment is declined, the checkout page displays "Your payment was
+  declined. Please check your card details or try a different payment
+  method." and keeps the customer on the checkout page with cart intact.
+- FR-13: If the session expires mid-checkout, the customer is redirected to
+  login with the message "Your session expired. Please log in to continue
+  checkout." and the cart is preserved.
+
+4. ACCEPTANCE CRITERIA (see also separate Acceptance Criteria document)
+- Given valid credentials, when the customer logs in, then they land on the
+  account dashboard with their prior cart restored.
+- Given 5 failed attempts within 15 minutes, when the customer tries a 6th
+  time, then the account is locked and the lockout message is shown.
+- Given a locked account, when 15 minutes have passed, then the customer can
+  log in again successfully with the correct password.
+- Given a logged-out customer with items in cart, when they close and reopen
+  the browser within the same session, then the cart items are still present.

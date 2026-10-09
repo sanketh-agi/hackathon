@@ -1,0 +1,20 @@
+EXISTING TEST CASE (legacy regression suite)
+TC-LEGACY-014: Verify login with valid credentials
+
+Preconditions:
+- Test account exists: user "qa.tester@acme.com" / password "TestPass!234"
+- Test account is not currently locked out.
+
+Steps:
+1. Navigate to https://staging.acme.com/login
+2. Enter "qa.tester@acme.com" in the Email field
+3. Enter "TestPass!234" in the Password field
+4. Click "Log In"
+
+Expected Result:
+- User is redirected to /account/dashboard
+- Page displays "Welcome back, qa.tester@acme.com"
+
+Notes: This test does NOT currently cover lockout behavior, cart restoration,
+or the wrong-password error message — those are gaps the new generation pass
+should fill.

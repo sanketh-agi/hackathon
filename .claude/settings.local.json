@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./.venv/Scripts/python *)",
+      "Bash(ANTHROPIC_API_KEY=sk-test-placeholder ./.venv/Scripts/python -m uvicorn app.main:app --port 8000)",
+      "Bash(curl -s http://localhost:8000/health)",
+      "Bash(curl -s -X POST http://localhost:8000/customers -H \"Content-Type: application/json\" -d '{\"name\":\"Acme\",\"app_url\":\"https://example.com\",\"config_json\":{}}')",
+      "Bash(winget install *)",
+      "Bash(aws elasticbeanstalk *)",
+      "Bash(npm run *)",
+      "Bash(.venv/Scripts/python.exe *)"
+    ]
+  }
+}
